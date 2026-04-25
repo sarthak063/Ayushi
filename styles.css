@@ -80,7 +80,7 @@ body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align
 #progress-bar{height:100%;width:0%;border-radius:3px;background:linear-gradient(90deg,#f472b6,#ec4899,#a855f7);transition:width .1s linear}
 
 /* Lyrics display — below the image */
-#lyrics-display{width:95vw;max-width:600px;text-align:center;font-family:'Monotype Corsiva','Palatino Linotype',cursive;font-size:clamp(1.35rem,5.5vw,1.6rem);color:rgba(0,0,0,1);padding:8px 0;margin-top:12px;background:none;opacity:0;transition:opacity .3s ease;letter-spacing:.02em;line-height:1.4;min-height:2em}
+#lyrics-display{width:100%;text-align:center;font-family:'Monotype Corsiva','Palatino Linotype',cursive;font-size:clamp(1.35rem,5.5vw,1.6rem);color:rgba(0,0,0,1);padding:0;margin-top:5px;background:none;opacity:0;transition:opacity .3s ease;letter-spacing:.02em;line-height:1.4;min-height:1.8em}
 #lyrics-display.show{opacity:1}
 #lyrics-display.hidden{display:none!important}
 .lyric-hl{color:#ec4899;font-weight:700;text-shadow:0 0 8px rgba(236,72,153,.5),0 0 20px rgba(236,72,153,.3)}
