@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Happy Birthday – A special pencil-sketch timelapse animation">
+  <title>Happy Birthday 🎂</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <button id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙</button>
+  <div class="stars" id="stars"></div>
+
+  <!-- ══════ Screen 1: Choose Name ══════ -->
+  <div class="screen active" id="screen-name">
+    <h1 class="screen-title">kya naam rakhna chahegee</h1>
+    <p class="screen-sub">pick wisely 👀</p>
+    <div class="options-list">
+      <button class="opt-btn" onclick="chooseName('Labri')"><span class="opt-name">labri</span> <span class="opt-hint">-
+          agr terko yaad ho iska meaning lol😔</span></button>
+      <button class="opt-btn" onclick="chooseName('Bauni')"><span class="opt-name">bauni</span> <span class="opt-hint">-
+          best one</span></button>
+      <button class="opt-btn" onclick="showThakurDialog()"><span class="opt-name">Thakur ji ki premika🤪</span></button>
+      <button class="opt-btn" onclick="chooseName('Loudspeaker')"><span class="opt-name">Loudspeaker</span> <span
+          class="opt-hint">- second bestt</span></button>
+      <button class="opt-btn" onclick="chooseName('Ayushi')"><span class="opt-name">Ayushi</span> <span
+          class="opt-hint">- thik h chlega(actually first time yehi choose kriyo, test other ones later)</span></button>
+    </div>
+  </div>
+
+  <!-- ══════ Screen 2: Choose Song ══════ -->
+  <div class="screen" id="screen-song">
+    <h1 class="screen-title">Pick a vibe 🎵</h1>
+    <p class="screen-sub">mereko lga ki shayad cool lgee</p>
+    <div class="options-list">
+      <button class="opt-btn" onclick="chooseSong('song1.mp3')">🎵 Pehla gana</button>
+      <button class="opt-btn" onclick="chooseSong('song2.mp3')">🎶 Dushra</button>
+      <button class="opt-btn" onclick="chooseSong('song3.mp3')">🎵 Teesra</button>
+      <button class="opt-btn" onclick="chooseSong('song4.mp3')">🎶 Chal ek aur</button>
+    </div>
+  </div>
+
+  <!-- ══════ Screen 3: Choose Photo ══════ -->
+  <div class="screen" id="screen-photo">
+    <h1 class="screen-title">Choose the photo</h1>
+    <p class="screen-sub">photo ni dekh sakti coz spoiled ho jaega 😔</p>
+    <div class="options-list">
+      <button class="opt-btn" onclick="choosePhoto(1)">🖼️ Image 1</button>
+      <button class="opt-btn" onclick="choosePhoto(2)">🖼️ Image 2</button>
+      <button class="opt-btn" onclick="choosePhoto(3)">🖼️ Image 3</button>
+    </div>
+  </div>
+
+  <!-- ══════ Screen 4: Player ══════ -->
+  <div class="screen" id="screen-player" style="justify-content:flex-start;padding-top:40px">
+    <div id="loading-area">
+      <div class="loader-ring"></div>
+      <p class="loader-text">Preparing something special…</p>
+    </div>
+    <button id="play-btn" class="hidden">▶ &nbsp;Play</button>
+    <p class="play-subtitle hidden" id="play-sub">Hope you like it 😭</p>
+    <div id="stage">
+      <canvas id="art-canvas"></canvas>
+      <div id="birthday-section">
+        <span class="bday-cake">🎂</span>
+        <span class="bday-text">Happy Birthday!</span>
+        <span class="bday-name" id="bday-name-el">Ayushi</span>
+        <span class="bday-sparkles">✦ ✦ ✦ ✦ ✦</span>
+      </div>
+    </div>
+    <div id="lyrics-display" class="hidden"></div>
+    <div id="bottom-actions">
+      <button class="action-btn" onclick="goHome()">different name, song, image try krlo</button>
+      <button class="action-btn" onclick="showScreen('screen-feedback')">Feedback dede 😔</button>
+    </div>
+    <div id="progress-bar-container">
+      <div id="progress-bar"></div>
+    </div>
+  </div>
+
+  <!-- ══════ Screen 5: Feedback ══════ -->
+  <div class="screen" id="screen-feedback">
+    <h1 class="screen-title">Feedback time!</h1>
+    <p class="screen-sub">kaisa laga? 👀</p>
+    <div class="options-list">
+      <button class="opt-btn" onclick="showScreen('screen-thankyou')"
+        style="text-align:center;font-size:1.1rem;font-weight:700">🔥 Bhayankar 🔥</button>
+      <button class="opt-btn" onclick="showScreen('screen-sorry')"
+        style="text-align:center;font-size:1.1rem;font-weight:700">Ye kya bana diyaa😭</button>
+    </div>
+  </div>
+
+  <!-- ══════ Screen 6: Thank You ══════ -->
+  <div class="screen" id="screen-thankyou">
+    <span class="end-screen-icon">🥰</span>
+    <h1 class="end-screen-text"
+      style="background:linear-gradient(135deg,#f472b6,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">
+      Thank youuu!</h1>
+    <p class="end-screen-sub">glad you liked it ✨</p>
+    <button class="end-home-btn" onclick="goHome()">Go Home</button>
+  </div>
+
+  <!-- ══════ Screen 7: Sorry ══════ -->
+  <div class="screen" id="screen-sorry">
+    <span class="end-screen-icon">😭</span>
+    <h1 class="end-screen-text">soorryy😭</h1>
+    <p class="end-screen-sub">next time better banaunga 🫡</p>
+    <button class="end-home-btn" onclick="goHome()">Go Home</button>
+  </div>
+
+  <!-- ══════ Dialog: Thakur ══════ -->
+  <div class="dialog-overlay" id="dialog-thakur">
+    <div class="dialog-box">
+      <p>option dediya to kuch bhi choose kregi😭, wapaaaaas ja</p>
+      <button onclick="document.getElementById('dialog-thakur').classList.remove('active')">Go back</button>
+    </div>
+  </div>
+
+  <script src="image_data.js"></script>
+  <script src="image_data_2.js"></script>
+  <script src="image_data_3.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>

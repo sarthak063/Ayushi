@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content=" – A special pencil-sketch timelapse animation">
+  <title>Ayushi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ───── Reset & Base ───── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #0a0a12;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    /* ───── Starfield background ───── */
+    .stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .stars span {
+      position: absolute;
+      border-radius: 50%;
+      background: #fff;
+      animation: twinkle var(--dur) ease-in-out infinite alternate;
+    }
+
+    @keyframes twinkle {
+      0% {
+        opacity: 0.15;
+        transform: scale(0.8);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1.2);
+      }
+    }
+
+    /* ───── Loading screen ───── */
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #0a0a12;
+      color: #fff;
+      gap: 24px;
+      transition: opacity 0.6s ease;
+    }
+
+    #loading-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loader-ring {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-top-color: #f472b6;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loader-text {
+      font-size: 1rem;
+      letter-spacing: 0.05em;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* ───── Play button ───── */
+    #play-btn {
+      position: relative;
+      z-index: 10;
+      padding: 18px 54px;
+      border: none;
+      border-radius: 60px;
+      font-family: 'Inter', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: #fff;
+      cursor: pointer;
+      background: linear-gradient(135deg, #f472b6 0%, #a855f7 50%, #6366f1 100%);
+      box-shadow: 0 0 40px rgba(168, 85, 247, 0.45), 0 0 80px rgba(244, 114, 182, 0.2);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    #play-btn:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 60px rgba(168, 85, 247, 0.65), 0 0 100px rgba(244, 114, 182, 0.35);
+    }
+
+    #play-btn:active {
+      transform: scale(0.97);
+    }
+
+    #play-btn.hidden {
+      display: none;
+    }
+
+    .play-subtitle {
+      margin-top: 14px;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.45);
+      letter-spacing: 0.08em;
+      z-index: 10;
+      text-transform: uppercase;
+    }
+
+    .play-subtitle.hidden {
+      display: none;
+    }
+
+    /* ───── Canvas stage ───── */
+    #stage {
+      position: relative;
+      display: none;
+      z-index: 10;
+      width: 95vw;
+      max-width: 600px;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #stage.visible {
+      display: flex;
+    }
+
+    #art-canvas {
+      display: block;
+      width: 100%;
+      max-height: 70vh;
+      border-radius: 12px;
+      box-shadow: 0 0 60px rgba(168, 85, 247, 0.25), 0 8px 32px rgba(0, 0, 0, 0.6);
+      object-fit: contain;
+    }
+
+    /* ───── Happy Birthday section (below the image) ───── */
+    #birthday-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+      margin-top: 24px;
+      padding: 10px 16px 30px;
+    }
+
+    #birthday-section.visible {
+      opacity: 1;
+    }
+
+    #birthday-section .bday-cake {
+      font-size: clamp(2rem, 6vw, 3rem);
+      opacity: 0;
+      animation: cakeBounce 1s 0.3s ease forwards;
+    }
+
+    #birthday-section .bday-text {
+      font-family: 'Great Vibes', cursive;
+      font-size: clamp(2.2rem, 9vw, 4.5rem);
+      color: #fff;
+      text-shadow:
+        0 0 20px rgba(244, 114, 182, 0.9),
+        0 0 60px rgba(168, 85, 247, 0.7),
+        0 0 100px rgba(99, 102, 241, 0.5),
+        0 4px 12px rgba(0, 0, 0, 0.8);
+      letter-spacing: 0.04em;
+      transform: scale(0.6);
+      animation: bdayPop 1.2s ease forwards;
+      text-align: center;
+      padding: 0 12px;
+      line-height: 1.2;
+    }
+
+    #birthday-section .bday-name {
+      font-family: 'Great Vibes', cursive;
+      font-size: clamp(1.8rem, 7vw, 3.2rem);
+      background: linear-gradient(135deg, #fbbf24, #f59e0b, #fcd34d, #fbbf24);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.6)) drop-shadow(0 0 30px rgba(245, 158, 11, 0.35));
+      margin-top: 8px;
+      letter-spacing: 0.06em;
+      opacity: 0;
+      animation: nameGlow 1s 0.8s ease forwards, shimmer 3s 1.8s ease-in-out infinite;
+    }
+
+    #birthday-section .bday-sparkles {
+      font-size: clamp(0.8rem, 2vw, 1rem);
+      color: rgba(255, 255, 255, 0.5);
+      margin-top: 12px;
+      letter-spacing: 0.4em;
+      opacity: 0;
+      animation: fadeUp 0.8s 1.4s ease forwards;
+    }
+
+    @keyframes bdayPop {
+      0% {
+        transform: scale(0.6);
+        opacity: 0;
+      }
+
+      60% {
+        transform: scale(1.08);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeUp {
+      0% {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes nameGlow {
+      0% {
+        opacity: 0;
+        transform: translateY(10px) scale(0.8);
+      }
+
+      60% {
+        opacity: 1;
+        transform: translateY(-2px) scale(1.05);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes cakeBounce {
+      0% {
+        opacity: 0;
+        transform: scale(0) rotate(-20deg);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.3) rotate(5deg);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    /* ───── Confetti ───── */
+    .confetti-piece {
+      position: fixed;
+      z-index: 100;
+      width: 10px;
+      height: 14px;
+      border-radius: 2px;
+      animation: confettiFall var(--fall-dur) ease-in forwards;
+      opacity: 0;
+    }
+
+    @keyframes confettiFall {
+      0% {
+        opacity: 1;
+        transform: translateY(0) rotate(0deg);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(110vh) rotate(var(--rot));
+      }
+    }
+
+    /* ───── Pencil cursor during animation ───── */
+    .pencil-cursor {
+      position: absolute;
+      z-index: 50;
+      pointer-events: none;
+      font-size: 28px;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
+      transform: rotate(-30deg);
+      transition: top 0.12s linear, left 0.08s linear;
+    }
+
+    /* ───── Progress bar ───── */
+    #progress-bar-container {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(400px, 80vw);
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      z-index: 60;
+      display: none;
+      overflow: hidden;
+    }
+
+    #progress-bar-container.visible {
+      display: block;
+    }
+
+    #progress-bar {
+      height: 100%;
+      width: 0%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, #f472b6, #a855f7, #6366f1);
+      transition: width 0.1s linear;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Starfield -->
+  <div class="stars" id="stars"></div>
+
+  <!-- Loading screen -->
+  <div id="loading-screen">
+    <div class="loader-ring"></div>
+    <p class="loader-text">Preparing something special…</p>
+  </div>
+
+  <!-- Play button -->
+  <button id="play-btn" class="hidden">▶ &nbsp;Play</button>
+  <p class="play-subtitle hidden" id="play-sub">Hope you like it 😭</p>
+
+  <!-- Canvas stage -->
+  <div id="stage">
+    <canvas id="art-canvas"></canvas>
+    <!-- Birthday text section (below the image) -->
+    <div id="birthday-section">
+      <span class="bday-cake">🎂</span>
+      <span class="bday-text">Happy Birthday!</span>
+      <span class="bday-name">Ayushi</span>
+      <span class="bday-sparkles">✦ ✦ ✦ ✦ ✦</span>
+    </div>
+  </div>
+
+  <!-- Progress bar -->
+  <div id="progress-bar-container">
+    <div id="progress-bar"></div>
+  </div>
+
+  <script src="image_data.js"></script>
+  <script>
+    // ─── Configuration ────────────────────────────
+    const TOTAL_DURATION = 14000;  // ms – total animation time
+    const SKETCH_PHASE = 0.55;   // first 55 % → grayscale sketch reveal (top→bottom)
+    const COLOR_PHASE = 0.40;   // next 40 %  → color sweep (bottom→up)
+    const BIRTHDAY_DELAY = 500;    // ms after animation ends to show text
+
+    // ─── Globals ──────────────────────────────────
+    let srcImage = null;   // fully loaded Image
+    let canvasEl, ctx, stageEl;
+    let animRunning = false;
+
+    // ─── Create starfield ─────────────────────────
+    (() => {
+      const container = document.getElementById('stars');
+      for (let i = 0; i < 80; i++) {
+        const s = document.createElement('span');
+        const size = Math.random() * 2.5 + 1;
+        s.style.cssText = `
+          width:${size}px; height:${size}px;
+          top:${Math.random() * 100}%; left:${Math.random() * 100}%;
+          --dur:${(Math.random() * 3 + 1.5).toFixed(2)}s;
+          animation-delay:${(Math.random() * 3).toFixed(2)}s;
+        `;
+        container.appendChild(s);
+      }
+    })();
+
+    // ─── Load image from image_data.js (IMAGE_B64 variable) ─────
+    async function loadImage() {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = (e) => { console.error('Image decode failed', e); reject(e); };
+        img.src = 'data:image/png;base64,' + IMAGE_B64;
+      });
+    }
+
+    // ─── Helper: convert an ImageData row-band to grayscale ───
+    function grayscaleRow(imageData, yStart, yEnd) {
+      const d = imageData.data;
+      const w = imageData.width;
+      for (let y = yStart; y < yEnd; y++) {
+        for (let x = 0; x < w; x++) {
+          const i = (y * w + x) * 4;
+          const lum = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+          // Lighten slightly to mimic pencil sketch
+          const v = Math.min(255, lum * 1.05 + 15);
+          d[i] = d[i + 1] = d[i + 2] = v;
+        }
+      }
+    }
+
+    // ─── Helper: blend grayscale → color for a band ───
+    function blendColorBand(grayData, colorData, outData, yStart, yEnd, t) {
+      // t in [0,1] → how much color to show
+      const g = grayData.data, c = colorData.data, o = outData.data;
+      const w = grayData.width;
+      for (let y = yStart; y < yEnd; y++) {
+        for (let x = 0; x < w; x++) {
+          const i = (y * w + x) * 4;
+          o[i] = g[i] + (c[i] - g[i]) * t;
+          o[i + 1] = g[i + 1] + (c[i + 1] - g[i + 1]) * t;
+          o[i + 2] = g[i + 2] + (c[i + 2] - g[i + 2]) * t;
+          o[i + 3] = 255;
+        }
+      }
+    }
+
+    // ─── Main animation ───────────────────────────
+    function runAnimation() {
+      if (animRunning) return;
+      animRunning = true;
+
+      const img = srcImage;
+      canvasEl = document.getElementById('art-canvas');
+      ctx = canvasEl.getContext('2d');
+      stageEl = document.getElementById('stage');
+
+      // Size canvas to fit viewport while keeping aspect ratio
+      const maxW = window.innerWidth * 0.93;
+      const maxH = window.innerHeight * 0.82;
+      const scale = Math.min(maxW / img.width, maxH / img.height, 1);
+      const W = Math.round(img.width * scale);
+      const H = Math.round(img.height * scale);
+      canvasEl.width = W;
+      canvasEl.height = H;
+
+      // Draw full colour image to extract data
+      ctx.drawImage(img, 0, 0, W, H);
+      const colorPixels = ctx.getImageData(0, 0, W, H);
+
+      // Build full grayscale version
+      const grayPixels = ctx.getImageData(0, 0, W, H);
+      grayscaleRow(grayPixels, 0, H);
+
+      // Clear canvas (black)
+      ctx.fillStyle = '#0a0a12';
+      ctx.fillRect(0, 0, W, H);
+
+      stageEl.classList.add('visible');
+
+      // Add pencil cursor
+      const pencil = document.createElement('div');
+      pencil.className = 'pencil-cursor';
+      pencil.textContent = '✏️';
+      stageEl.appendChild(pencil);
+
+      const progressContainer = document.getElementById('progress-bar-container');
+      const progressBar = document.getElementById('progress-bar');
+      progressContainer.classList.add('visible');
+
+      const sketchEnd = TOTAL_DURATION * SKETCH_PHASE;
+      const colorEnd = TOTAL_DURATION * (SKETCH_PHASE + COLOR_PHASE);
+
+      let start = null;
+      // We'll work in bands of rows
+      const BAND = 4; // rows per band for performance
+
+      function frame(ts) {
+        if (!start) start = ts;
+        const elapsed = ts - start;
+        const progress = Math.min(elapsed / TOTAL_DURATION, 1);
+        progressBar.style.width = (progress * 100) + '%';
+
+        // ─── Phase 1: Sketch reveal (top→bottom) ───
+        if (elapsed <= sketchEnd) {
+          const t = elapsed / sketchEnd;                 // 0→1
+          const revealRow = Math.floor(t * H);           // row to reveal up to
+          // Draw the newly revealed bands (grayscale)
+          const out = ctx.getImageData(0, 0, W, H);
+          const prevReveal = Math.max(0, Math.floor(((elapsed - 16) < 0 ? 0 : (elapsed - 16)) / sketchEnd * H));
+          for (let y = prevReveal; y < revealRow; y++) {
+            for (let x = 0; x < W; x++) {
+              const i = (y * W + x) * 4;
+              out.data[i] = grayPixels.data[i];
+              out.data[i + 1] = grayPixels.data[i + 1];
+              out.data[i + 2] = grayPixels.data[i + 2];
+              out.data[i + 3] = 255;
+            }
+          }
+          ctx.putImageData(out, 0, 0);
+
+          // Pencil cursor follows the reveal line
+          const canvasRect = canvasEl.getBoundingClientRect();
+          const pencilY = (revealRow / H) * canvasEl.offsetHeight;
+          const pencilX = (Math.sin(elapsed / 120) * 0.3 + 0.5) * canvasEl.offsetWidth;
+          pencil.style.top = pencilY + 'px';
+          pencil.style.left = pencilX + 'px';
+        }
+        // ─── Phase 2: Color sweep (bottom→up) ───
+        else if (elapsed <= colorEnd) {
+          const t = (elapsed - sketchEnd) / (colorEnd - sketchEnd); // 0→1
+          const colorRow = Math.floor(H - t * H);  // row from bottom going up
+
+          const out = ctx.getImageData(0, 0, W, H);
+          // Bottom part is now colour
+          for (let y = colorRow; y < H; y++) {
+            for (let x = 0; x < W; x++) {
+              const i = (y * W + x) * 4;
+              out.data[i] = colorPixels.data[i];
+              out.data[i + 1] = colorPixels.data[i + 1];
+              out.data[i + 2] = colorPixels.data[i + 2];
+              out.data[i + 3] = 255;
+            }
+          }
+          ctx.putImageData(out, 0, 0);
+
+          // Move pencil cursor with paint brush emoji
+          pencil.textContent = '🖌️';
+          const pencilY = (colorRow / H) * canvasEl.offsetHeight;
+          const pencilX = (Math.sin(elapsed / 100) * 0.3 + 0.5) * canvasEl.offsetWidth;
+          pencil.style.top = pencilY + 'px';
+          pencil.style.left = pencilX + 'px';
+        }
+        // ─── Phase 3: Fully coloured – show birthday ───
+        else {
+          // Draw full colour
+          ctx.putImageData(colorPixels, 0, 0);
+          pencil.remove();
+          progressContainer.classList.remove('visible');
+          showBirthday();
+          return; // stop rAF
+        }
+
+        requestAnimationFrame(frame);
+      }
+
+      requestAnimationFrame(frame);
+    }
+
+    // ─── Birthday text + confetti ─────────────────
+    function showBirthday() {
+      setTimeout(() => {
+        const section = document.getElementById('birthday-section');
+        section.classList.add('visible');
+        // Smoothly scroll so the birthday text is visible on mobile
+        setTimeout(() => {
+          section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 300);
+        spawnConfetti();
+      }, BIRTHDAY_DELAY);
+    }
+
+    function spawnConfetti() {
+      const colors = ['#f472b6', '#a855f7', '#6366f1', '#38bdf8', '#facc15', '#fb923c', '#4ade80'];
+      for (let i = 0; i < 120; i++) {
+        const el = document.createElement('div');
+        el.className = 'confetti-piece';
+        el.style.left = Math.random() * 100 + 'vw';
+        el.style.top = '-4vh';
+        el.style.background = colors[Math.floor(Math.random() * colors.length)];
+        el.style.setProperty('--fall-dur', (Math.random() * 3 + 2.5).toFixed(2) + 's');
+        el.style.setProperty('--rot', (Math.random() * 1080 - 540) + 'deg');
+        el.style.animationDelay = (Math.random() * 2).toFixed(2) + 's';
+        el.style.width = (Math.random() * 8 + 6) + 'px';
+        el.style.height = (Math.random() * 10 + 8) + 'px';
+        el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        document.body.appendChild(el);
+        // Cleanup
+        setTimeout(() => el.remove(), 7000);
+      }
+    }
+
+    // ─── Bootstrap ────────────────────────────────
+    (async () => {
+      try {
+        srcImage = await loadImage();
+        document.getElementById('loading-screen').classList.add('hidden');
+        const btn = document.getElementById('play-btn');
+        const sub = document.getElementById('play-sub');
+        btn.classList.remove('hidden');
+        sub.classList.remove('hidden');
+        btn.addEventListener('click', () => {
+          btn.classList.add('hidden');
+          sub.classList.add('hidden');
+          runAnimation();
+        });
+      } catch (e) {
+        document.querySelector('.loader-text').textContent = 'Could not load image 😢';
+        console.error(e);
+      }
+    })();
+  </script>
+</body>
+
+</html>
