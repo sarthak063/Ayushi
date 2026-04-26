@@ -14,7 +14,7 @@ body {
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 25%, #f3e8ff 50%, #ede9fe 75%, #fdf2f8 100%);
-    font-family: 'Georgia', 'Palatino Linotype', cursive;
+    font-family: 'Lora', Georgia, serif;
     overflow-x: hidden;
     overflow-y: auto;
     position: relative;
@@ -79,7 +79,7 @@ body {
 }
 
 .screen-title {
-    font-family: 'Monotype Corsiva', 'Palatino Linotype', cursive;
+    font-family: 'Satisfy', cursive;
     font-size: clamp(2rem, 7vw, 3.5rem);
     text-align: center;
     margin-bottom: 8px;
@@ -117,7 +117,7 @@ body {
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     color: #4a1942;
-    font-family: 'Lucida Sans', 'Palatino Linotype', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.05rem;
     text-align: left;
     cursor: pointer;
@@ -233,7 +233,7 @@ body {
     padding: 18px 54px;
     border: none;
     border-radius: 60px;
-    font-family: 'Monotype Corsiva', 'Palatino Linotype', cursive;
+    font-family: 'Satisfy', cursive;
     font-size: 1.25rem;
     font-weight: 700;
     letter-spacing: .06em;
@@ -444,7 +444,7 @@ body {
     background: rgba(255, 255, 255, .65);
     backdrop-filter: blur(8px);
     color: #4a1942;
-    font-family: 'Monotype Corsiva', 'Palatino Linotype', cursive;
+    font-family: 'Satisfy', cursive;
     font-size: .95rem;
     font-weight: 600;
     cursor: pointer;
@@ -522,7 +522,7 @@ body {
 #lyrics-display {
     width: 100%;
     text-align: center;
-    font-family: 'Monotype Corsiva', 'Palatino Linotype', cursive;
+    font-family: 'Satisfy', cursive;
     font-size: clamp(1.35rem, 5.5vw, 1.6rem);
     color: rgba(0, 0, 0, 1);
     padding: 0;
@@ -556,7 +556,7 @@ body {
 }
 
 .end-screen-text {
-    font-family: 'Monotype Corsiva', 'Palatino Linotype', cursive;
+    font-family: 'Satisfy', cursive;
     font-size: clamp(2rem, 8vw, 3.5rem);
     text-align: center;
     margin-bottom: 12px;
